@@ -1,3 +1,16 @@
+// Calvin Moylan 30018702
+// Java Project
+//- Implement your solution
+//- Must contain a dynamic data structure
+//- Must contain hashing techniques
+//- Must contain sorting algorithm
+//- Must contain searching technique
+//- Must contain 3rd party library
+//- Must have a GUI
+//- Must adhere to coding standards
+//- Must have help files
+
+
 package javaproject;
 
 import com.opencsv.CSVReaderHeaderAware;
@@ -133,7 +146,7 @@ public class JavaProject extends Application {
                     t.setVisible(true);
                     return;
                 }
-                if (Hashing.ComparePasswords(u.getSalt(), u.getHashedPassword(), pass)) {
+                if (Hashing.comparePasswords(u.getSalt(), u.getHashedPassword(), pass)) {
                     help.setVisible(true);
                     list.setVisible(true);
                     addbutton.setVisible(true);
@@ -159,14 +172,14 @@ public class JavaProject extends Application {
         stopbutton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                StopSong();
+                stopSong();
             }
         });
         
         sortbutton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                SortSongsClicked();
+                sortSongsClicked();
             }
         });
 
@@ -174,7 +187,15 @@ public class JavaProject extends Application {
             @Override
             public void handle(ActionEvent event) {
                 String song = searchField.getText();
-                String value = SearchSong(song);
+                String value = searchSong(song);
+                if (value.equals("")){
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText("MP3 Song Search");
+                    alert.setContentText("Could not find that song.");
+                    alert.setTitle("Error");
+                    Optional<ButtonType> result = alert.showAndWait();
+                }
+                
                 System.out.println(value);
             }
         });
@@ -188,7 +209,7 @@ public class JavaProject extends Application {
                 fileChooser.getExtensionFilters().add(extFilter);
 
                 File file = fileChooser.showSaveDialog(stage);
-                SaveSongs(file.getAbsolutePath());
+                saveSongs(file.getAbsolutePath());
             }
         });
 
@@ -202,14 +223,14 @@ public class JavaProject extends Application {
                 Window primaryStage = null;
 
                 File file = chooser.showOpenDialog(primaryStage);
-                LoadSongs(file);
+                loadSongs(file);
             }
         });
 
         nextbutton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                NextSong();
+                nextSong();
             }
         });
 
@@ -218,14 +239,14 @@ public class JavaProject extends Application {
         backbutton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                BackSong();
+                backSong();
             }
         });
 
         addbutton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                SelectFiles();
+                selectFiles();
             }
         });
 
@@ -276,6 +297,7 @@ public class JavaProject extends Application {
     
     //play the song from filepath
     private void playSong(String filePath) {
+        System.out.println(filePath);
         AudioInputStream audioIn = null;
         try {
             File f = new File(filePath);
@@ -296,13 +318,20 @@ public class JavaProject extends Application {
     }
 
     //merge the two song lists together
-    private List<String> MergeSongs(List<String> left, List<String> right) {
+    private List<String> mergeSongs(List<String> left, List<String> right) {
         List<String> combined = new ArrayList<String>();
 
+            
+            
         while (left.size() > 0 || right.size() > 0) {
             if (left.size() > 0 && right.size() > 0) {
-
-                if (left.get(0).compareTo(right.get(0)) <= 0) {
+                
+                String[] lSplit = left.get(0).split("\\\\");
+                String[] rSplit = right.get(0).split("\\\\");
+                String lItem = lSplit[lSplit.length - 1];
+                String rItem = rSplit[rSplit.length - 1];
+                
+                if (lItem.compareTo(rItem) <= 0) {
                     combined.add(left.get(0));
                     left.remove(left.get(0));
                 } else {
@@ -322,7 +351,7 @@ public class JavaProject extends Application {
     }
 
     //Sorts the songs
-    private List<String> SortSongs(List<String> unsorted) {
+    private List<String> sortSongs(List<String> unsorted) {
         if (unsorted.size() < 2) {
             return unsorted;
         }
@@ -339,24 +368,25 @@ public class JavaProject extends Application {
             right.add(unsorted.get(i));
         }
 
-        left = SortSongs(left);
+        left = sortSongs(left);
 
-        right = SortSongs(right);
+        right = sortSongs(right);
 
-        return MergeSongs(left, right);
+        return mergeSongs(left, right);
     }
     
     //convert linkedlist to ArrayList and then Merge sort
-    private void SortSongsClicked() {
+    private void sortSongsClicked() {
         List<String> tempSongs = new ArrayList<String>();
 
         for (String song : Songs) {
-            String[] split = song.split("\\\\");
-            String item = split[split.length - 1];
-            tempSongs.add(item);
+            //String[] split = song.split("\\\\");
+            //String item = split[split.length - 1];
+            //tempSongs.add(item);
+            tempSongs.add(song);
         }
 
-        List<String> SortedList = SortSongs(tempSongs);
+        List<String> SortedList = sortSongs(tempSongs);
 
         Songs.clear();
 
@@ -368,8 +398,8 @@ public class JavaProject extends Application {
     }
     
     //Search for song using binary search
-    private String SearchSong(String SongToFind) {
-        SortSongsClicked(); //Sort the songs first
+    private String searchSong(String SongToFind) {
+        sortSongsClicked(); //Sort the songs first
         String[] tempSongs = new String[Songs.size()];
 
         //convert songs to array
@@ -414,7 +444,7 @@ public class JavaProject extends Application {
     }
     
     //Select files to be added to the mp3 player
-    private void SelectFiles() {
+    private void selectFiles() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select MP3");
         File defaultDirectory = new File("c:/");
@@ -431,7 +461,7 @@ public class JavaProject extends Application {
     }
 
     //load songs from CSV using OpenCSV
-    private void LoadSongs(File file) {
+    private void loadSongs(File file) {
         try {
             CSVReaderHeaderAware CSVReader = new CSVReaderHeaderAware(new FileReader(file.getPath())); //create CSVReader instance
             List<String[]> csvData = CSVReader.readAll();
@@ -451,7 +481,7 @@ public class JavaProject extends Application {
     }
     
     //Save the songs to a CSV file using OpenCSV
-    private void SaveSongs(String Path) {
+    private void saveSongs(String Path) {
         try {
             Writer writer = Files.newBufferedWriter(Paths.get(Path)); //create instance of writer
 
@@ -478,7 +508,7 @@ public class JavaProject extends Application {
     }
     
     //toggle playing song
-    private void StopSong() {
+    private void stopSong() {
         if (Playing) { //check if song is playing
             Playing = false; //stop playing
             clip.stop();
@@ -489,7 +519,7 @@ public class JavaProject extends Application {
         }
     }
     //goes forward in the playlist
-    private void NextSong() {
+    private void nextSong() {
         try {
             clip.stop();
         }
@@ -502,7 +532,7 @@ public class JavaProject extends Application {
         list.getSelectionModel().select(Current); //set the selected song
     }
     //goes back a song
-    private void BackSong() {
+    private void backSong() {
         try {
             clip.stop();
         }

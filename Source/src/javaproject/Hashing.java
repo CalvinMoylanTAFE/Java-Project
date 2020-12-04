@@ -1,3 +1,5 @@
+//Calvin Moylan 30018702
+//Hashing Class
 package javaproject;
 
 import java.security.MessageDigest;
@@ -11,20 +13,24 @@ public class Hashing {
     private String HashedPassword;
     private byte[] Salt;
 
-    Hashing(String password) {
-        this.Salt = GenerateSalt();
-        this.HashedPassword = HashPassword(password, this.Salt);
+    //Constructor
+    public Hashing(String password) {
+        this.Salt = generateSalt();
+        this.HashedPassword = hashPassword(password, this.Salt);
     }
-
+    
+    //hashed password getter
     public String getHashedPassword() {
         return HashedPassword;
     }
 
+    //salt getter
     public byte[] getSalt() {
         return Salt;
     }
     
-    public String HashPassword(String password, byte[] Salt) {
+    //this method hashes that password
+    public String hashPassword(String password, byte[] Salt) {
         String HashedPassword = "";
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -46,7 +52,8 @@ public class Hashing {
         return HashedPassword;
     }
     
-    private byte[] GenerateSalt() {
+    //this method generates a salt for the hash
+    private byte[] generateSalt() {
         byte[] Salt = new byte[16];
         try {
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
@@ -59,7 +66,8 @@ public class Hashing {
         return Salt;
     }
     
-    public static boolean ComparePasswords(byte[] Salt, String ExistingPassword, String Password) {
+    //This method compares two passwords to see if they are the same.
+    public static boolean comparePasswords(byte[] Salt, String ExistingPassword, String Password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             
